@@ -14,6 +14,7 @@ private:
 	filesystem::file_time_type date;
 	int size;
 public:
+	File();
 	File(filesystem::directory_entry file);
 	string getName();
 	string getPath();
@@ -23,6 +24,7 @@ public:
 	bool operator> (File f);
 	bool operator< (File f);
 
+	string toString();
 
 };
 

@@ -1,5 +1,7 @@
 #include "File.h"
 
+File::File() {}
+
 File::File(filesystem::directory_entry file) {
 	name = file.path().filename().string();
 	path = file.path().string();
@@ -24,7 +26,7 @@ int File::getSize() {
 }
 
 bool File::operator>(File f) {
-	if (f.getSize() > getSize()) {
+	if (f.size < size) {
 		return true;
 	}
 	else {
@@ -33,10 +35,14 @@ bool File::operator>(File f) {
 }
 
 bool File::operator<(File f) {
-	if (f.getSize() < getSize()) {
+	if (f.size > size) {
 		return true;
 	}
 	else {
 		return false;
 	}
+}
+
+string File::toString() {
+	return "name: " + name + " size: " + to_string(size);
 }
