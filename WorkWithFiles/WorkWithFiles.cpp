@@ -3,7 +3,7 @@
 #include "DirectoryHandling.h"
 #include "File.h"
 
-
+using namespace std;
 //save result in file 
 int main()
 {
@@ -19,7 +19,17 @@ int main()
     File** all = dir->getAllFiles();
     dir->printArrayFiles(all);
     cout << "\n";
-    File** sortBySize = dir->sortBySize();
-    dir->printArrayFiles(sortBySize);
+    //File** sortBySize = dir->sortBySize();
+    //File** sortByDate1 = dir->sortByDate();
+    //dir->printArrayFiles(sortBySize);
+    //dir->printArrayFiles(sortByDate1);
+
+   // cout << dir->getLastFile().getName() << endl;
+
+    cout << "summa: " << endl;
+    cout << dir->getSumOfFileSizes() << endl;
+
+    cout << "summa with nested directory: " << endl;
+    cout << dir->getSumOfFileSizesWithNestedDir() << endl;
 }
 

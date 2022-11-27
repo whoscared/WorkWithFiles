@@ -9,11 +9,13 @@ using namespace std;
 class File
 {
 private:
+
 	string name;
 	string path;
 	filesystem::file_time_type date;
 	int size;
 public:
+
 	File();
 	File(filesystem::directory_entry file);
 	string getName();
