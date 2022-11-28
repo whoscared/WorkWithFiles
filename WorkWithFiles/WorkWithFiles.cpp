@@ -31,5 +31,10 @@ int main()
 
     cout << "summa with nested directory: " << endl;
     cout << dir->getSumOfFileSizesWithNestedDir() << endl;
+
+    list<string> dubl = dir->getDublicate();
+    for (string temp : dubl) {
+        cout << temp << endl;
+    }
 }
 

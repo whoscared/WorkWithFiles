@@ -1,7 +1,8 @@
 #include <Windows.h>
 #include <iostream>
 #include <string>
-#include <fileapi.h>
+#include <map>
+#include <list>
 #include "File.h"
 
 #pragma once
@@ -17,20 +18,22 @@ using namespace std;
   //with threshold !! (done)
 //search the most new file (done)
   //with temp date 
-//search duplicate (size, title) (do!!!!!!)
+//search duplicate (size, title) (done)
 
 
 class DirectoryHandling
 {
 private:
-	string title;
+	string path;
 	int countFile;
+	File** allFiles;
 	int countOfFile();
 
 	int findMinIndexSize(File** files, int start, int count);
 	int findMinIndexDate(File** files, int start, int count);
 
 	void getSum(long& sum, const string& path);
+	void searchDublicate(list<string>& dublicate, map<string, string>& allFiles, const string& path);
 
 public:
 	DirectoryHandling(string title);
@@ -49,6 +52,8 @@ public:
 	File getLargestFileWithThreshold(int threshold);
 
 	File getLastFile();
+
+	list<string> getDublicate();
 
 	void printArrayFiles(File** files);
 };
