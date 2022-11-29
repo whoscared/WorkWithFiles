@@ -1,5 +1,0 @@
-Дубликаты в данной и вложенных директориях:
-new.txt 0 C:\Users\coklo\Downloads\Downloads msetup\new.txt
-new.txt 0 C:\Users\coklo\Downloads\new.txt
-
-

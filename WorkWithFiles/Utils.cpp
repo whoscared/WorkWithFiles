@@ -3,6 +3,10 @@
 using namespace std;
 
 bool checkPath(string path) {
+	if (path.empty()) {
+		return false;
+	}
+
 	string ex = "/:*?<>|";
 
 	if (path.substr(1,1) != ":" || path.substr(2,1) != "\\") {
@@ -22,6 +26,10 @@ bool checkPath(string path) {
 }
 
 bool checkFile(string filetxt) {
+	if (filetxt.empty()) {
+		return false;
+	}
+
 	string ex = "/:*?<>|";
 
 	for (int i = 0; i < filetxt.size(); i++) {

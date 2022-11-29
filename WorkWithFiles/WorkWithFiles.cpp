@@ -3,12 +3,14 @@
 #include "File.h"
 #include "Utils.h"
 #include "CreateReport.h"
+#include <windows.h>
 
 using namespace std;
-//save result in file 
+
 int main()
 {
-	setlocale(LC_ALL, "Russian");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 
 	DirectoryHandling dirHand;
 
@@ -24,13 +26,14 @@ int main()
 		cin >> choose;
 
 		if (choose == 1) {
+			cout << "Путь: ";
 			menu = false;
 
 			while (!menu) {
-				cout << "Путь: ";
-				cin >> path;
+				getline(cin, path, '\n');
 				menu = checkPath(path);
 			}
+			menu = false;
 			continue;
 		}
 		else if (choose == 2) {
