@@ -6,10 +6,9 @@ CreateReport::CreateReport() {
 
 CreateReport::CreateReport(string title) {
 	this->title = title;
-	//deletes old data and writes new report 
-	//open(title , ofstream::app)
 	fileout.open(title + ".txt");
 }
+
 
 bool CreateReport::isOpen() {
 	if (fileout.is_open()) {
@@ -20,8 +19,10 @@ bool CreateReport::isOpen() {
 	}
 }
 
+
 bool CreateReport::setTitle(string title) {
 	fileout.open(title + ".txt");
+
 	if (isOpen()) {
 		this->title = title;
 		return true;
@@ -33,8 +34,8 @@ bool CreateReport::setTitle(string title) {
 }
 
 bool CreateReport::setString(string s) {
+
 	if (isOpen()) {
-		//add time
 		fileout << s << endl;
 		return true;
 	}

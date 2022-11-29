@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Windows.h>
 #include <iostream>
 #include <string>
@@ -5,29 +7,17 @@
 #include <list>
 #include "File.h"
 
-#pragma once
-
 using namespace std;
-
-//count of files (done)
-//count of directory (done)
-//summa file size (byte) (done)
-  //with nested directiry (done)
-  //without nested directory (done)
-//search the most big file (done)
-  //with threshold !! (done)
-//search the most new file (done)
-  //with temp date 
-//search duplicate (size, title) (done)
-
 
 class DirectoryHandling
 {
 private:
 	string path;
 	int countFile;
+	int countAll;
 	File** allFiles;
 	int countOfFile();
+	int countOfAll();
 
 	int findMinIndexSize(File** files, int start, int count);
 	int findMinIndexDate(File** files, int start, int count);
@@ -36,14 +26,16 @@ private:
 	void searchDublicate(list<string>& dublicate, map<string, string>& allFiles, const string& path);
 
 public:
+	DirectoryHandling();
 	DirectoryHandling(string title);
 
 	int getCountFile();
 	int countOfDirectory();
 
-	int getSumOfFileSizes(); //to do number formatting
-	long getSumOfFileSizesWithNestedDir(); //to do number formatting
+	int getSumOfFileSizes(); 
+	long getSumOfFileSizesWithNestedDir();
 
+	File** getAll();
 	File** getAllFiles();
 	File** sortBySize();
 	File** sortByDate();

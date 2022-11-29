@@ -2,9 +2,6 @@
 #include <filesystem>
 #include "File.h"
 
-//filesystem::file_time_type ftime = filesystem::last_write_time(file);
-//cout << "time: " << ftime << endl;
-
 int DirectoryHandling::countOfFile() {
 	int counter = 0;
 	
@@ -12,6 +9,15 @@ int DirectoryHandling::countOfFile() {
 		if (!file.is_directory()) {
 			counter++;
 		}
+	}
+	return counter;
+}
+
+int DirectoryHandling::countOfAll() {
+	int counter = 0;
+
+	for (const auto& file : filesystem::directory_iterator(path)) {
+		counter++;
 	}
 	return counter;
 }
@@ -37,7 +43,9 @@ int DirectoryHandling::findMinIndexDate(File** files, int start, int count) {
 
 
 void DirectoryHandling::getSum(long& sum, const string& path) {
+
 	for (const auto& file : filesystem::directory_iterator(path)) {
+
 		if (filesystem::is_directory(file)) {
 			getSum(sum, file.path().string());
 		}
@@ -48,12 +56,16 @@ void DirectoryHandling::getSum(long& sum, const string& path) {
 }
 
 void DirectoryHandling::searchDublicate(list<string>& dublicate, map<string, string>& allFiles, const string& path) {
+
 	for (const auto& file : filesystem::directory_iterator(path)) {
+
 		if (filesystem::is_directory(file)) {
 			searchDublicate(dublicate, allFiles, file.path().string());
 		}
 		else {
+
 			auto temp = allFiles.find(file.path().filename().string() + " " + to_string(file.file_size()));
+
 			if (temp != allFiles.end()) {
 				dublicate.push_back(temp->first + " " + temp->second);
 				dublicate.push_back(temp->first + " " + file.path().string());
@@ -65,9 +77,18 @@ void DirectoryHandling::searchDublicate(list<string>& dublicate, map<string, str
 	}
 }
 
+
+DirectoryHandling::DirectoryHandling() {
+	this->path = "C:\\Users\\coklo\\Downloads";
+	countFile = countOfFile();
+	countAll = countOfAll();
+	allFiles = getAllFiles();
+}
+
 DirectoryHandling::DirectoryHandling(string title) {
 	this->path = title;
 	countFile = countOfFile();
+	countAll = countOfAll();
 	allFiles = getAllFiles();
 }
 
@@ -105,6 +126,18 @@ long DirectoryHandling::getSumOfFileSizesWithNestedDir() {
 }
 
 
+File** DirectoryHandling::getAll() {
+	File** allFiles = new File * [countAll];
+	int index = 0;
+
+	for (const auto& file : filesystem::directory_iterator(path)) {
+		File* temp = new File(file);
+		allFiles[index] = temp;
+		index++;
+	}
+	return allFiles;
+}
+
 File** DirectoryHandling::getAllFiles() {
 	File** allFiles = new File * [countFile]; 
 	int index = 0;
@@ -120,24 +153,26 @@ File** DirectoryHandling::getAllFiles() {
 }
 
 File** DirectoryHandling::sortBySize() {
+	File** sortArraySize = getAllFiles();
 	int start = 0;
 	
 	for (int i = 0; i < countFile; i++) {
-		int minIndex = findMinIndexSize(allFiles, i, countFile);
-		swap(allFiles[i], allFiles[minIndex]);
+		int minIndex = findMinIndexSize(sortArraySize, i, countFile);
+		swap(sortArraySize[i], sortArraySize[minIndex]);
 	}
-	return allFiles;
+	return sortArraySize;
 }
 
 File** DirectoryHandling::sortByDate() {
+	File** sortArrayDate = getAllFiles();
 	int start = 0;
 
 	for (int i = 0; i < countFile; i++) {
-		int minIndex = findMinIndexDate(allFiles, i, countFile);
-		swap(allFiles[i], allFiles[minIndex]);
+		int minIndex = findMinIndexDate(sortArrayDate, i, countFile);
+		swap(sortArrayDate[i], sortArrayDate[minIndex]);
 	}
 
-	return allFiles;
+	return sortArrayDate;
 }
 
 
@@ -146,7 +181,7 @@ File DirectoryHandling::getLargestFile() {
 	if (countFile == 0) {
 		throw new exception("Файлы отсутствуют!");
 	}
-	return *sortFiles[0];
+	return *sortFiles[countFile - 1];
 }
 
 File DirectoryHandling::getLargestFileWithThreshold(int threshold) {
@@ -154,7 +189,7 @@ File DirectoryHandling::getLargestFileWithThreshold(int threshold) {
 	if (countFile == 0) {
 		throw new exception("Файлы отсутствуют!");
 	}
-	for (int i = 0; i < countFile; i++) {
+	for (int i = countFile - 1; i >= 0; i--) {
 		if (sortFiles[i]->getSize() < threshold) {
 			return *sortFiles[i];
 		}
@@ -171,6 +206,7 @@ File DirectoryHandling::getLastFile() {
 	return *sortFiles[countFile - 1];
 }
 
+
 list<string> DirectoryHandling::getDublicate() {
 	list<string> dublicate;
 	map<string, string> allFiles;
@@ -180,10 +216,11 @@ list<string> DirectoryHandling::getDublicate() {
 	return dublicate;
 }
 
+
 void DirectoryHandling::printArrayFiles(File** files) {
 	int count = countOfFile();
 
 	for (int i = 0; i < count; i++) {
-		cout << files[i]->toString() << " " << files[i]->getDate() << endl;
+		cout << files[i]->toString() << " date: " << files[i]->getDate() << endl;
 	}
 }

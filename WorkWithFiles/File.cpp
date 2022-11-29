@@ -9,6 +9,7 @@ File::File(filesystem::directory_entry file) {
 	size = file.file_size();
 }
 
+
 string File::getName() {
 	return name;
 }
@@ -25,23 +26,6 @@ int File::getSize() {
 	return size;
 }
 
-bool File::operator>(File f) {
-	if (f.size < size) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-bool File::operator<(File f) {
-	if (f.size > size) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
 
 string File::toString() {
 	return "name: " + name + " size: " + to_string(size);
