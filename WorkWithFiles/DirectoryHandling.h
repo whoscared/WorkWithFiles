@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <vector>
 #include "File.h"
 
 using namespace std;
@@ -16,29 +17,24 @@ private:
 	int countFile;
 	int countAll;
 	File** allFiles;
-	int countOfFile();
-	int countOfAll();
+	vector<File> v_allFiles;
+	vector<File> v_all;
 
-	int findMinIndexSize(File** files, int start, int count);
-	int findMinIndexDate(File** files, int start, int count);
-
-	void getSum(long& sum, const string& path);
+	void getSum(long& sum, const string path);
 	void searchDublicate(list<string>& dublicate, map<string, string>& allFiles, const string& path);
 
 public:
-	DirectoryHandling();
+	//DirectoryHandling();
 	DirectoryHandling(string title);
 
 	int getCountFile();
-	int countOfDirectory();
+	int getCountOfDirectory();
 
-	int getSumOfFileSizes(); 
+	long getSumOfFileSizes(); 
 	long getSumOfFileSizesWithNestedDir();
 
-	File** getAll();
-	File** getAllFiles();
-	File** sortBySize();
-	File** sortByDate();
+	vector<File> getAll();
+	vector<File> getAllFiles();
 
 	File getLargestFile();
 	File getLargestFileWithThreshold(int threshold);
@@ -47,6 +43,5 @@ public:
 
 	list<string> getDublicate();
 
-	void printArrayFiles(File** files);
 };
 

@@ -12,7 +12,6 @@ int main()
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	DirectoryHandling dirHand;
 
 	int choose;
 	bool menu = true;
@@ -26,12 +25,15 @@ int main()
 		cin >> choose;
 
 		if (choose == 1) {
-			cout << "Путь: ";
 			menu = false;
 
 			while (!menu) {
-				getline(cin, path, '\n');
+				cout << "Путь: ";
+				cin >> path;
 				menu = checkPath(path);
+				if (!menu) {
+					cout << "Некорректный ввод! Попробуйте еще раз" << endl;
+				}
 			}
 			menu = false;
 			continue;
@@ -47,9 +49,13 @@ int main()
 		cout << "Введите название файла, в который будет сохранятся результаты и история работы: ";
 		cin >> file;
 		menu = checkFile(file);
+		if (!menu) {
+			cout << "Некорректный ввод! Попробуйте еще раз" << endl;
+		}
+		
 	}
 	
-	dirHand = DirectoryHandling(path);
+	DirectoryHandling dirHand = DirectoryHandling(path);
 	CreateReport report = CreateReport(file);
 
 	while (menu) {
@@ -63,106 +69,133 @@ int main()
 			"8.Файл с максимальным размером(с указанным порогом)\n" <<
 			"9.Самый новый файл\n" << 
 			"10.Дубликаты\n" << 
-			"11.Выход" << endl;
+			"11.Выход\n" << endl;
 		cin >> choose;
 
 		switch (choose)
 		{
 		case 1:
 		{
-			File** allFiles = dirHand.getAllFiles();
-			dirHand.printArrayFiles(allFiles);
-			
+			cout << "\n";
 			report.setString("Вывод всех файлов:");
-			for (int i = 0; i < dirHand.getCountFile(); i++) {
-				report.setString(allFiles[i]->toString());
-			}
-			report.setString("\n");
 
+			vector<File> all_files = dirHand.getAllFiles();
+			vector<File>::iterator iter = all_files.begin();
+
+			int index = 1;
+			while (iter != all_files.end()) {
+				cout << to_string(index) + " " << *iter;
+				report.setString(iter->toString());
+				iter++; index++;
+			}
+
+			report.setString("\n");
+			cout << "\n";
 			break;
 		}
 		case 2:
 		{
-			File** all = dirHand.getAll();
-			dirHand.printArrayFiles(all);
-
+			cout << "\n";
 			report.setString("Вывод всех файлов и директорий:");
-			for (int i = 0; i < dirHand.getCountFile(); i++) {
-				report.setString(all[i]->toString());
-			}
-			report.setString("\n");
 
+			vector<File> all = dirHand.getAll();
+			vector<File>::iterator iter = all.begin();
+
+			int index = 1;
+			while (iter != all.end()) {
+				cout << to_string(index) + " " << *iter;
+				report.setString(iter->toString());
+				iter++; index++;
+			}
+
+			report.setString("\n");
+			cout << "\n";
 			break;
 		}
 		case 3:
 		{
-			cout << dirHand.getCountFile() << endl;
+			cout << "\n";
+			cout << "Количество файлов: " + to_string(dirHand.getCountFile()) << endl;
 
 			report.setString("Количество файлов: " + to_string(dirHand.getCountFile()));
 			report.setString("\n");
-
+			cout << "\n";
 			break;
 		}
 		case 4:
 		{
-			cout << dirHand.countOfDirectory() << endl;
+			cout << "\n";
+			cout << "Количество директорий: " + to_string(dirHand.getCountOfDirectory()) << endl;
 
-			report.setString("Количество директорий: " + to_string(dirHand.getCountFile()));
+			report.setString("Количество директорий: " + to_string(dirHand.getCountOfDirectory()));
 			report.setString("\n");
-
+			cout << "\n";
 			break;
 		}
 		case 5:
 		{
+			cout << "\n";
 			cout << dirHand.getSumOfFileSizes() << " байт" << endl;
 
 			report.setString("Сумма размеров всех файлов: " + to_string(dirHand.getSumOfFileSizes()) + " байт");
 			report.setString("\n");
-
+			cout << "\n";
 			break;
 		}
 		case 6:
 		{
+			cout << "\n";
 			cout << dirHand.getSumOfFileSizesWithNestedDir() << " байт" << endl;
 
 			report.setString("Сумма размеров всех файлов в данной и во вложенных директориях: " + to_string(dirHand.getSumOfFileSizesWithNestedDir()) + " байт");
 			report.setString("\n");
-
+			cout << "\n";
 			break;
 		}
 		case 7:
 		{
-			cout << "Файл с максимальным размером:\n" << dirHand.getLargestFile().toString() << endl;
+			cout << "\n";
+			cout << "Файл с максимальным размером:\n" << dirHand.getLargestFile() << endl;
 
 			report.setString("Файл с максимальным размером:" + dirHand.getLargestFile().toString());
 			report.setString("\n");
-
+			cout << "\n";
 			break;
 		}
 		case 8:
 		{
+			cout << "\n";
 			cout << "Введите порог для максимального размера в байтах: ";
 			int threshold;
 			cin >> threshold;
-			cout << "Файл с максимальным размером, учитывая порог = " << to_string(threshold) << " :\n" << dirHand.getLargestFileWithThreshold(threshold).toString() << endl;
+			File temp = dirHand.getLargestFileWithThreshold(threshold);
 
-			report.setString("Файл с максимальным размером, учитывая порог = " + to_string(threshold) + dirHand.getLargestFileWithThreshold(threshold).toString());
+			if (temp.getName() == "") {
+				cout << "Файл не найден" << endl;
+				report.setString("Файл с максимальным размером, учитывая порог = " + to_string(threshold) + " не найден");
+			}
+			else {
+				cout << "Файл с максимальным размером, учитывая порог = " << to_string(threshold) << " :\n" << temp << endl;
+				report.setString("Файл с максимальным размером, учитывая порог = " + to_string(threshold) + " " + temp.toString());
+			}
+
 			report.setString("\n");
-
+			cout << "\n";
 			break;
 		}
 		case 9:
 		{
-			cout << "Последний созданный файл:\n" <<
-				dirHand.getLastFile().toString() << " date: " << dirHand.getLastFile().getDate() << endl;
+			cout << "\n";
+			cout << "Последний созданный файл:\n" << dirHand.getLastFile();
 
 			report.setString("Последний созданный файл: " + dirHand.getLastFile().toString());
 			report.setString("\n");
-
+			cout << "\n";
 			break;
 		}
 		case 10:
 		{
+			cout << "\n";
 			cout << "Дубликаты в данной и вложенных директориях:" << endl;
 			report.setString("Дубликаты в данной и вложенных директориях:");
 			 list<string> dublicate = dirHand.getDublicate();
@@ -172,7 +205,7 @@ int main()
 				 report.setString(temp);
 			 }
 			 report.setString("\n");
-
+			 cout << "\n";
 			break;
 		}
 		case 11:
@@ -181,7 +214,9 @@ int main()
 			break;
 		}
 		default:
+			cout << "\n";
 			cout << "Данная опция отстуствует в меню." << endl;
+			cout << "\n";
 			break;
 		}
 	}

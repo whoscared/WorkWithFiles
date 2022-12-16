@@ -1,48 +1,10 @@
 #include "DirectoryHandling.h"
 #include <filesystem>
+#include <algorithm>
+#include <numeric>
 #include "File.h"
 
-int DirectoryHandling::countOfFile() {
-	int counter = 0;
-	
-	for (const auto& file : filesystem::directory_iterator(path)) {
-		if (!file.is_directory()) {
-			counter++;
-		}
-	}
-	return counter;
-}
-
-int DirectoryHandling::countOfAll() {
-	int counter = 0;
-
-	for (const auto& file : filesystem::directory_iterator(path)) {
-		counter++;
-	}
-	return counter;
-}
-
-
-int DirectoryHandling::findMinIndexSize(File** files, int start, int count) {
-	int minIndex = start;
-
-	for (int i = start; i < count; i++) {
-		minIndex = files[i]->getSize() < files[minIndex]->getSize() ? i : minIndex;
-	}
-	return minIndex;
-}
-
-int DirectoryHandling::findMinIndexDate(File** files, int start, int count) {
-	int minIndex = start;
-
-	for (int i = start; i < count; i++) {
-		minIndex = files[i]->getDate() < files[minIndex]->getDate() ? i : minIndex;
-	}
-	return minIndex;
-}
-
-
-void DirectoryHandling::getSum(long& sum, const string& path) {
+void DirectoryHandling::getSum(long& sum, const string path) {
 
 	for (const auto& file : filesystem::directory_iterator(path)) {
 
@@ -77,19 +39,21 @@ void DirectoryHandling::searchDublicate(list<string>& dublicate, map<string, str
 	}
 }
 
-
-DirectoryHandling::DirectoryHandling() {
-	this->path = "C:\\Users\\coklo\\Downloads";
-	countFile = countOfFile();
-	countAll = countOfAll();
-	allFiles = getAllFiles();
-}
-
 DirectoryHandling::DirectoryHandling(string title) {
 	this->path = title;
-	countFile = countOfFile();
-	countAll = countOfAll();
-	allFiles = getAllFiles();
+	int countF = 0;
+	int countA = 0;
+	for (const auto& file : filesystem::directory_iterator(path)) {
+		if (!file.is_directory()) {
+			v_allFiles.push_back(File(file));
+			countF++;
+		}
+		v_all.push_back(File(file));
+		countA++;
+	}
+
+	countFile = countF;
+	countAll = countA;
 }
 
 
@@ -97,23 +61,18 @@ int DirectoryHandling::getCountFile() {
 	return countFile;
 }
 
-int DirectoryHandling::countOfDirectory() {
-	int counter = 0;
-
-	for (const auto& file : filesystem::directory_iterator(path)) {
-		if (file.is_directory()) {
-			counter++;
-		}
-	}
-	return counter;
+int DirectoryHandling::getCountOfDirectory() {
+	return countAll - countFile;
 }
 
 
-int DirectoryHandling::getSumOfFileSizes() {
-	int sum = 0;
+long DirectoryHandling::getSumOfFileSizes() {
+	long sum = 0;
+	vector<File>::iterator iter = v_allFiles.begin();
 
-	for (int i = 0; i < countFile; i++) {
-		sum += allFiles[i]->getSize();
+	while (iter != v_allFiles.end()) {
+		sum += iter->getSize();
+		iter++;
 	}
 
 	return sum;
@@ -126,84 +85,55 @@ long DirectoryHandling::getSumOfFileSizesWithNestedDir() {
 }
 
 
-File** DirectoryHandling::getAll() {
-	File** allFiles = new File * [countAll];
-	int index = 0;
-
-	for (const auto& file : filesystem::directory_iterator(path)) {
-		File* temp = new File(file);
-		allFiles[index] = temp;
-		index++;
-	}
-	return allFiles;
+vector<File> DirectoryHandling::getAll() {
+	return v_all;
 }
 
-File** DirectoryHandling::getAllFiles() {
-	File** allFiles = new File * [countFile]; 
-	int index = 0;
-
-	for (const auto& file : filesystem::directory_iterator(path)) {
-		if (!file.is_directory()) {
-			File* temp = new File(file);
-			allFiles[index] = temp;
-			index++;
-		}
-	}
-	return allFiles;
-}
-
-File** DirectoryHandling::sortBySize() {
-	File** sortArraySize = getAllFiles();
-	int start = 0;
-	
-	for (int i = 0; i < countFile; i++) {
-		int minIndex = findMinIndexSize(sortArraySize, i, countFile);
-		swap(sortArraySize[i], sortArraySize[minIndex]);
-	}
-	return sortArraySize;
-}
-
-File** DirectoryHandling::sortByDate() {
-	File** sortArrayDate = getAllFiles();
-	int start = 0;
-
-	for (int i = 0; i < countFile; i++) {
-		int minIndex = findMinIndexDate(sortArrayDate, i, countFile);
-		swap(sortArrayDate[i], sortArrayDate[minIndex]);
-	}
-
-	return sortArrayDate;
+vector<File> DirectoryHandling::getAllFiles() {
+	return v_allFiles;
 }
 
 
 File DirectoryHandling::getLargestFile() {
-	File** sortFiles = sortBySize();
 	if (countFile == 0) {
 		throw new exception("Файлы отсутствуют!");
 	}
-	return *sortFiles[countFile - 1];
+	auto max = max_element(v_allFiles.begin(), v_allFiles.end(), [](File const& file1, File const& file2) {
+		return file1.getSize() < file2.getSize();
+		});
+	return *max;
 }
 
 File DirectoryHandling::getLargestFileWithThreshold(int threshold) {
-	File** sortFiles = sortBySize();
 	if (countFile == 0) {
 		throw new exception("Файлы отсутствуют!");
 	}
-	for (int i = countFile - 1; i >= 0; i--) {
-		if (sortFiles[i]->getSize() < threshold) {
-			return *sortFiles[i];
-		}
+
+	sort(v_allFiles.begin(), v_allFiles.end(), [](File const& file1, File const& file2) {
+		return file1.getSize() > file2.getSize();
+		});
+
+	auto find = find_if(v_allFiles.begin(), v_allFiles.end(), [&threshold](File const& file) {
+		return file.getSize() < threshold;
+		});
+
+	if (find == v_allFiles.end()) {
+		return File();
 	}
-	throw new exception("Подходящий файл не найден!");
+	return *find;
 }
 
 
 File DirectoryHandling::getLastFile() {
-	File** sortFiles = sortByDate();
 	if (countFile == 0) {
 		throw new exception("Файлы отсутствуют!");
 	}
-	return *sortFiles[countFile - 1];
+
+	auto last = max_element(v_allFiles.begin(), v_allFiles.end(), [](File const& file1, File const& file2) {
+		return file1.getDate() < file2.getDate();
+		});
+
+	return *last;
 }
 
 
@@ -217,10 +147,3 @@ list<string> DirectoryHandling::getDublicate() {
 }
 
 
-void DirectoryHandling::printArrayFiles(File** files) {
-	int count = countOfFile();
-
-	for (int i = 0; i < count; i++) {
-		cout << files[i]->toString() << " date: " << files[i]->getDate() << endl;
-	}
-}

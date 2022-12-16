@@ -1,0 +1,11 @@
+Вывод всех файлов и директорий:
+name: App.config size: 189
+name: bin size: 0
+name: castel.cs size: 152
+name: Hanoi2.csproj size: 2400
+name: hw_Hanoi.cs size: 4469
+name: obj size: 0
+name: Program.cs size: 4469
+name: Properties size: 0
+
+

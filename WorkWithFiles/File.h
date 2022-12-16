@@ -18,11 +18,13 @@ public:
 	File();
 	File(filesystem::directory_entry file);
 
-	string getName();
-	string getPath();
-	filesystem::file_time_type getDate();
-	int getSize();
+	string getName() const;
+	string getPath() const;
+	filesystem::file_time_type getDate() const;
+	int getSize() const;
 
-	string toString();
+	string toString() const;
 };
+
+ostream& operator<<(ostream& out, File const& file);
 

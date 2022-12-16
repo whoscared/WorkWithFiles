@@ -7,22 +7,10 @@ bool checkPath(string path) {
 		return false;
 	}
 
-	string ex = "/:*?<>|";
-
-	if (path.substr(1,1) != ":" || path.substr(2,1) != "\\") {
-		return false;
+	if (filesystem::is_directory(path)) {
+		return true;
 	}
-	if (path.find('"') != string::npos) {
-		return false;
-	}
-
-	for (int i = 3; i < path.size(); i++) {
-
-		if (ex.find(path.substr(i, 1)) != string::npos) {
-			return false;
-		}
-	}
-	return true;
+	return false;
 }
 
 bool checkFile(string filetxt) {
